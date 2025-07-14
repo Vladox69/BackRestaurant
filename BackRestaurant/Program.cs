@@ -40,6 +40,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<MyContext>(options=>options.UseNpgsql(builder.Configuration["ConnectionStrings:Postgress"]));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IWaiterService, WaiterService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
