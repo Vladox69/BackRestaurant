@@ -103,7 +103,9 @@ namespace BackRestaurant.Data
             {
             new Claim(JwtRegisteredClaimNames.Sub, user.id.ToString()), 
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
-            new Claim("role", user.role) 
+            new Claim("role", user.role),
+            new Claim("name", user.name),
+            new Claim("boss_id", user.boss_id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));

@@ -22,11 +22,15 @@ namespace BackRestaurant.Controllers
             try
             {
                 var users = await _userService.GetAllUsers();
-                return Ok(users);
+                return Ok(new {ok=true,data=users,message="Fetching success"});
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    ok = false,
+                    message = $"Internal server error: {ex.Message}"
+                });
             }
         }
 
@@ -37,11 +41,15 @@ namespace BackRestaurant.Controllers
             try
             {
                 var result = await _userService.Login(form);
-                return Ok(result);
+                return Ok(new {ok=true,data= result,message="Login success"});
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500,new
+                {
+                    ok = false,
+                    message = $"Internal server error: {ex.Message}"
+                });
             }
         }
 

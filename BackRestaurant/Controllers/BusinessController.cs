@@ -48,5 +48,22 @@ namespace BackRestaurant.Controllers
             }
         }
 
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetBusinessByUserId([FromRoute] int id)
+        {
+            try
+            {
+                var res = await _businessService.GetBusinessByUserId(id);
+                return Ok(new { ok = true, data = res, message = "Fetching success" });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    ok = false,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
     }
 }

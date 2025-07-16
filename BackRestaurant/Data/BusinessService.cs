@@ -25,6 +25,19 @@ namespace BackRestaurant.Data
             }
         }
 
+        public async Task<Business> GetBusinessByUserId(int id)
+        {
+            try
+            {
+                Business? businessFind = await _context.Business.FirstOrDefaultAsync(b => b.user_id == id);
+                return businessFind ?? throw new Exception($"No business found");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while fetching business {ex.Message}");
+            }
+        }
+
         public async Task<bool> InsertBusiness(Business business)
         {
             try
