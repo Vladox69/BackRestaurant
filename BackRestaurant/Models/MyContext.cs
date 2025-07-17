@@ -14,6 +14,7 @@ namespace BackRestaurant.Models
             modelBuilder.Entity<Business>().ToTable("business");
             modelBuilder.Entity<Waiter>().ToTable("waiters");
             modelBuilder.Entity<Product>().ToTable("products");
+            modelBuilder.Entity<Category>().ToTable("categories");
             modelBuilder.Entity<Business>()
                 .HasOne(b => b.user)
                 .WithMany()
@@ -30,11 +31,16 @@ namespace BackRestaurant.Models
                 .HasOne(p => p.business)
                 .WithMany()
                 .HasForeignKey(p=>p.business_id);
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.category)
+                .WithMany()
+                .HasForeignKey(p => p.category_id);
 
         }
         public DbSet<User> Users => Set<User>();
         public DbSet<Business> Business => Set<Business>();
         public DbSet<Waiter> Waiters => Set<Waiter>();
         public DbSet<Product> Products => Set<Product>();
+        public DbSet<Category> Categories => Set<Category>();
     }
 }

@@ -22,7 +22,7 @@ namespace BackRestaurant.Data
                     { 
                         id=p.id,
                         business_id=p.business_id,
-                        category=p.category,
+                        category_id=p.category_id,
                         description=p.description,
                         name= p.name,
                         price= p.price
@@ -43,7 +43,7 @@ namespace BackRestaurant.Data
                     {
                         id = p.id,
                         business_id = p.business_id,
-                        category = p.category,
+                        category_id = p.category_id,
                         description = p.description,
                         name = p.name,
                         price = p.price
@@ -59,7 +59,7 @@ namespace BackRestaurant.Data
             try
             {
                 Product? productFind = await _context.Products
-                    .FirstOrDefaultAsync(w => (w.name==product.name&&w.category==product.category));
+                    .FirstOrDefaultAsync(w => (w.name==product.name&&w.category_id==product.category_id));
                 if (productFind != null)
                 {
                     throw new Exception($"Product already exist");

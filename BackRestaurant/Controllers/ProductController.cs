@@ -20,8 +20,8 @@ namespace BackRestaurant.Controllers
         {
             try
             {
-                var products = await _productService.GetAllProducts();
-                return Ok(products);
+                var categories = await _productService.GetAllProducts();
+                return Ok(new {ok=true,data= categories ,messages= "Fetching success" });
             }
             catch (Exception ex)
             {
@@ -35,11 +35,15 @@ namespace BackRestaurant.Controllers
             try
             {
                 var products = await _productService.GetProductsByBusinessId(id);
-                return Ok(products);
+                return Ok(new { ok=true,data=products, message = "Fetching success" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    ok = false,
+                    message = $"Internal server error: {ex.Message}"
+                });
             }
         }
 
