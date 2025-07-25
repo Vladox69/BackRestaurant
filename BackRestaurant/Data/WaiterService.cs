@@ -44,6 +44,19 @@ namespace BackRestaurant.Data
             }
         }
 
+        public async Task<Waiter> GetWaiterById(int id)
+        {
+            try
+            {
+                Waiter? waiterFind = await _context.Waiters.FirstOrDefaultAsync(w=> w.id == id);
+                return waiterFind ?? throw new Exception($"No waiter found");
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"An error occurred while fetching waiter by id {ex.Message}");
+            }
+        }
+
         public async Task<bool> InsertWaiter(Waiter waiter)
         {
             try

@@ -1,4 +1,5 @@
 using BackRestaurant.Data;
+using BackRestaurant.Hub;
 using BackRestaurant.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -10,16 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        In = ParameterLocation.Header,  
-        Description = "Please enter a valid JWT token",  
-        Name = "Authorization",  
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid JWT token",
+        Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",  
-        Scheme = "Bearer"  
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -30,19 +32,27 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"  
+                    Id = "Bearer"
                 }
             },
             new string[] {}
         }
     });
 });
-builder.Services.AddDbContext<MyContext>(options=>options.UseNpgsql(builder.Configuration["ConnectionStrings:Postgress"]));
+
+builder.Services.AddDbContext<MyContext>(options =>
+    options.UseNpgsql(builder.Configuration["ConnectionStrings:Postgres"]));
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IWaiterService, WaiterService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<OrderNotificationService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -56,12 +66,32 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/notificationHub"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAngular", policy => {
-        policy.WithOrigins("http://localhost:4200")
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -74,9 +104,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors("AllowAngular");
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowAngular");
+
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

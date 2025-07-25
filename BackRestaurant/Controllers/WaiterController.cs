@@ -45,5 +45,27 @@ namespace BackRestaurant.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWaiterById([FromRoute] int id)
+        {
+            try
+            {
+                var waiter = await _waiterService.GetWaiterById(id);
+                if (waiter == null)
+                {
+                    return NotFound($"No waiter found with id {id}");
+                }
+                return Ok(new{ok=true,data=waiter, message = "Fetching success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    ok = false,
+                    message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
     }
 }

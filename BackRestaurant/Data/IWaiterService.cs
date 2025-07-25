@@ -8,5 +8,6 @@ namespace BackRestaurant.Data
         Task<bool> InsertWaiter(Waiter waiter);
         Task<bool> UpdateWaiter(Waiter waiter);
         Task<bool> SaveWaiter(Waiter waiter);
+        Task<Waiter> GetWaiterById(int id);
     }
 }
