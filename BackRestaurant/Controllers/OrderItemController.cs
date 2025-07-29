@@ -41,10 +41,6 @@ namespace BackRestaurant.Controllers
             try
             {
                 var result = await _orderItemService.SaveOrderItem(orderItem);
-                if (!result)
-                {
-                    throw new Exception($"An error occurred while saving the business");
-                }
                 return Ok(new { ok = true, data = result, message = "Fetching success" });
             }
             catch (Exception ex)

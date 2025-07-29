@@ -8,11 +8,12 @@ namespace BackRestaurant.Data
     {
         private readonly MyContext _context;
         private readonly IConfiguration _configuration;
-
-        public OrderItemService(MyContext context, IConfiguration configuration)
+        private readonly OrderNotificationService _orderNotification;
+        public OrderItemService(MyContext context, IConfiguration configuration, OrderNotificationService orderNotification)
         {
             _context = context;
             _configuration = configuration;
+            _orderNotification = orderNotification;
         }
         public Task<OrderItem> GetOrderItemById(int id)
         {
@@ -33,12 +34,12 @@ namespace BackRestaurant.Data
             }
         }
 
-        public Task<bool> InsertOrderItem(OrderItem orderItem)
+        public Task<OrderItem> InsertOrderItem(OrderItem orderItem)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> SaveOrderItem(OrderItem orderItem)
+        public async Task<OrderItem> SaveOrderItem(OrderItem orderItem)
         {
             try
             {
@@ -57,12 +58,21 @@ namespace BackRestaurant.Data
             }
         }
 
-        public async Task<bool> UpdateOrderItem(OrderItem orderItem)
+        public async Task<OrderItem> UpdateOrderItem(OrderItem orderItem)
         {
             try
             {
                 _context.Entry(orderItem).State = EntityState.Modified;
-                return await _context.SaveChangesAsync() > 0;
+                Order? order = await _context.Orders.FirstOrDefaultAsync(o=>o.id==orderItem.order_id) ?? throw new Exception($"No order found");
+                if (orderItem.status != "delivered") { 
+                    await _orderNotification.NotifyOrderReadyToWaiter(orderItem, order.waiter_id.ToString());
+                }
+                var res = await _context.SaveChangesAsync() > 0;
+                if (!res)
+                {
+                    throw new Exception("Updated failed");
+                }
+                return orderItem;
             }
             catch (Exception ex)
             {

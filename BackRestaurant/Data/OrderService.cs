@@ -9,11 +9,13 @@ namespace BackRestaurant.Data
         private readonly MyContext _context;
         private readonly IConfiguration _configuration;
         private readonly OrderNotificationService _orderNotification;
-        public OrderService(MyContext context, IConfiguration configuration, OrderNotificationService orderNotification)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OrderService(MyContext context, IConfiguration configuration, OrderNotificationService orderNotification, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _configuration = configuration;
             _orderNotification = orderNotification;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Order> CreateOrderTransaction(OrderBody body)
@@ -48,7 +50,8 @@ namespace BackRestaurant.Data
                             throw new Exception($"An error occurred while creating the order transaction");
                         }
                         await transaction.CommitAsync();
-                        await _orderNotification.NotifyNewOrderToKitchen(body.order.id.Value.ToString(), body.order.waiter_id.ToString(),"2");
+                        var boss_id = _httpContextAccessor.HttpContext.User?.FindFirst("business_id")?.Value;
+                        await _orderNotification.NotifyNewOrderToKitchen(body.order,boss_id);
                         return body.order;
                     }
                     catch (Exception ex)

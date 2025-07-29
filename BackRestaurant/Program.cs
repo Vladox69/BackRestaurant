@@ -54,6 +54,7 @@ builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
 builder.Services.AddSignalR();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<OrderNotificationService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

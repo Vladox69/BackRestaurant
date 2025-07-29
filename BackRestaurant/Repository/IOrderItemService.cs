@@ -6,8 +6,8 @@ namespace BackRestaurant.Repository
     {
         Task<IEnumerable<OrderItem>> GetOrderItemsByOrderId(int id);
         Task<OrderItem> GetOrderItemById(int id);
-        Task<bool> InsertOrderItem(OrderItem orderItem);
-        Task<bool> UpdateOrderItem(OrderItem orderItem);
-        Task<bool> SaveOrderItem(OrderItem orderItem);
+        Task<OrderItem> InsertOrderItem(OrderItem orderItem);
+        Task<OrderItem> UpdateOrderItem(OrderItem orderItem);
+        Task<OrderItem> SaveOrderItem(OrderItem orderItem);
     }
 }
