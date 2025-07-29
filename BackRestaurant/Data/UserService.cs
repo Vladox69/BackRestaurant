@@ -1,4 +1,5 @@
 ﻿using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -45,7 +46,7 @@ namespace BackRestaurant.Data
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while inserting the user", ex);
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -53,18 +54,15 @@ namespace BackRestaurant.Data
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u=>u.email== form.email);
-                if (user==null)
-                {
-                    throw new Exception("User not found");
-                }
+                User? user = await _context.Users.FirstOrDefaultAsync(u=>u.email== form.email) ?? throw new Exception("User not found");
                 if (!BCrypt.Net.BCrypt.Verify(form.password,user.password))
                 {
                     throw new Exception("Invalid credentials");
                 }
-                return GenerateJwtToken(user);
+                Business? business = await _context.Business.FirstOrDefaultAsync(b => b.user_id == user.boss_id) ?? throw new Exception("User not found");
+                return GenerateJwtToken(user, business);
             }catch (Exception ex) {
-                throw new Exception($"An error occurred during login: {ex.Message}" );
+                throw new Exception($"{ex.Message}" );
             }
         }
 
@@ -81,7 +79,7 @@ namespace BackRestaurant.Data
                     return await InsertUser(user);
                 }
             }catch (Exception ex) {
-                throw new Exception($"An error occurred while saving the user: {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -93,11 +91,11 @@ namespace BackRestaurant.Data
                 return await _context.SaveChangesAsync() > 0;
             }
             catch (Exception ex) {
-                throw new Exception("An error occurred while updating the user", ex);
+                throw new Exception($"{ex.Message}");
             }
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(User user,Business business)
         {
             var claims = new[]
             {
@@ -105,7 +103,8 @@ namespace BackRestaurant.Data
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
             new Claim("role", user.role),
             new Claim("name", user.name),
-            new Claim("boss_id", user.boss_id.ToString())
+            new Claim("boss_id", user.boss_id.ToString()),
+            new Claim("business_id", business.id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Security.Claims;
 
 namespace BackRestaurant.Hub
 {
@@ -11,9 +12,9 @@ namespace BackRestaurant.Hub
 
         public override async Task OnConnectedAsync()
         {
-            var id = Context.User?.FindFirst("sub")?.Value; 
-            var role = Context.User?.FindFirst("role")?.Value;
-            var boss_id = Context.User?.FindFirst("boss_id")?.Value;
+            var id = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+            var role = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
+            var boss_id = Context.User?.FindFirst("business_id")?.Value;
 
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(role))
             {
@@ -38,7 +39,7 @@ namespace BackRestaurant.Hub
 
         public async Task JoinCookGroup()
         {
-            var id = Context.User?.FindFirst("boss_id")?.Value;
+            var id = Context.User?.FindFirst("business_id")?.Value;
             if (!Context.User?.IsInRole("cook") ?? true)
             {
                 throw new HubException("No tienes permiso para unirte a este grupo");
@@ -50,7 +51,7 @@ namespace BackRestaurant.Hub
 
         public async Task JoinWaiterGroup()
         {
-            var id = Context.User?.FindFirst("sub")?.Value;
+            var id = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!Context.User?.IsInRole("waiter") ?? true || string.IsNullOrEmpty(id))
             {

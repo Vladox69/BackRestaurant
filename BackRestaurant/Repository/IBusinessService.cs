@@ -1,6 +1,6 @@
 ﻿using BackRestaurant.Models;
 
-namespace BackRestaurant.Data
+namespace BackRestaurant.Repository
 {
     public interface IBusinessService
     {

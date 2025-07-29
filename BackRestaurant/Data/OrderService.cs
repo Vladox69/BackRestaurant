@@ -1,4 +1,5 @@
 ﻿using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackRestaurant.Data
@@ -47,18 +48,18 @@ namespace BackRestaurant.Data
                             throw new Exception($"An error occurred while creating the order transaction");
                         }
                         await transaction.CommitAsync();
-                        await _orderNotification.NotifyNewOrderToKitchen(body.order.id.Value.ToString(), body.order.waiter_id.ToString(),"1");
+                        await _orderNotification.NotifyNewOrderToKitchen(body.order.id.Value.ToString(), body.order.waiter_id.ToString(),"2");
                         return body.order;
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception($"An error occurred while creating the order transaction: {ex.Message}");
+                        throw new Exception($"{ex.Message}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred while creating the order transaction: {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -71,13 +72,45 @@ namespace BackRestaurant.Data
             }
             catch(Exception ex)
             {
-                throw new Exception($"An error occurred while fetching the order by ID: {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
-        public Task<IEnumerable<Order>> GetOrdersByIdBusiness(int id)
+        public async Task<IEnumerable<Order>> GetOrdersByIdBusiness(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.Orders
+                    .Where(p => p.table.business_id == id)
+                    .Select(p => new Order
+                    {
+                        id = p.id,
+                        status = p.status,
+                        total = p.total,
+                        waiter_id = p.waiter_id,
+                        table_id = p.table_id,
+                        waiter = new Waiter
+                        {
+                            id = p.waiter.id,
+                            shift = p.waiter.shift,
+                            user_id = p.waiter.user_id,
+                        },
+                        table = new Table
+                        {
+                            id = p.table.id,
+                            business_id = p.table.business_id,
+                            capacity = p.table.capacity,
+                            location = p.table.location,
+                            table_number = p.table.table_number
+                        }
+                    })
+                    .OrderByDescending(p => p.id)
+                    .ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"{ex.Message}");
+            }
         }
 
         public async Task<IEnumerable<Order>> GetOrdersByIdWaiterAndStatus(int id,string status)
@@ -111,7 +144,7 @@ namespace BackRestaurant.Data
             }
             catch(Exception ex)
             {
-                throw new Exception($"An error occurred while fetching orders by waiter ID: {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 

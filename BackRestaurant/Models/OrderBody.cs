@@ -3,6 +3,6 @@
     public class OrderBody
     {
         public Order order { get; set; }
-        public OrderItems[] items { get; set; }
+        public OrderItem[] items { get; set; }
     }
 }

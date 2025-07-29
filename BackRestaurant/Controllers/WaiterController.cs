@@ -1,5 +1,5 @@
-﻿using BackRestaurant.Data;
-using BackRestaurant.Models;
+﻿using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

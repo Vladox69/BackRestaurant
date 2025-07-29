@@ -1,6 +1,7 @@
 using BackRestaurant.Data;
 using BackRestaurant.Hub;
 using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -49,6 +50,8 @@ builder.Services.AddScoped<IWaiterService, WaiterService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ITableService, TableService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<OrderNotificationService>();

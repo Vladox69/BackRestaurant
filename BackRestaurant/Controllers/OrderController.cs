@@ -1,5 +1,5 @@
-﻿using BackRestaurant.Data;
-using BackRestaurant.Models;
+﻿using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -71,5 +71,23 @@ namespace BackRestaurant.Controllers
             }
         }
 
+        [HttpGet("business/{id}")]
+        public async Task<IActionResult> GetOrdersByIdBusiness([FromRoute] int id)
+        {
+            try
+            {
+                var result = await _orderService.GetOrdersByIdBusiness(id) ?? throw new Exception($"Not orders found");
+                return Ok(new { ok = true, data = result, message = "Fetching success" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    ok = false,
+                    message = $"Internal server error: {ex.Message}"
+                });
+
+            }
+        }
     }
 }

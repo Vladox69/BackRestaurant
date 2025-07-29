@@ -1,4 +1,5 @@
 ﻿using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackRestaurant.Data
@@ -21,7 +22,7 @@ namespace BackRestaurant.Data
                 return await _context.Business.Include(b=>b.user).ToListAsync();
             }
             catch (Exception ex) {
-                throw new Exception($"An error occurred while fetching business {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -34,7 +35,7 @@ namespace BackRestaurant.Data
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred while fetching business {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -50,7 +51,7 @@ namespace BackRestaurant.Data
                 await _context.Business.AddAsync(business);
                 return await _context.SaveChangesAsync()>0;
             }catch (Exception ex) {
-                throw new Exception($"An error occurred while inserting the business: {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
 
         }
@@ -68,7 +69,7 @@ namespace BackRestaurant.Data
                     return await InsertBusiness(business);
                 }
             }catch(Exception ex){
-                throw new Exception($"An error occurred while saving the business: {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -79,7 +80,7 @@ namespace BackRestaurant.Data
                 _context.Entry(business).State = EntityState.Modified;
                 return await _context.SaveChangesAsync()>0;
             }catch(Exception ex){
-                throw new Exception($"An error occurred while updating the business:{ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
     }

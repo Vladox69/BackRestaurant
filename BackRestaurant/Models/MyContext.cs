@@ -16,7 +16,7 @@ namespace BackRestaurant.Models
             modelBuilder.Entity<Product>().ToTable("products");
             modelBuilder.Entity<Category>().ToTable("categories");
             modelBuilder.Entity<Order>().ToTable("orders");
-            modelBuilder.Entity<OrderItems>().ToTable("order_items");
+            modelBuilder.Entity<OrderItem>().ToTable("order_items");
             modelBuilder.Entity<Table>().ToTable("tables");
             //Business
             modelBuilder.Entity<Business>()
@@ -56,11 +56,11 @@ namespace BackRestaurant.Models
                 .WithMany()
                 .HasForeignKey(o => o.waiter_id);
             //OrderItems
-            modelBuilder.Entity<OrderItems>()
+            modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.order)
                 .WithMany()
                 .HasForeignKey(oi => oi.order_id);
-            modelBuilder.Entity<OrderItems>()
+            modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.product)
                 .WithMany()
                 .HasForeignKey(oi => oi.product_id);
@@ -72,7 +72,7 @@ namespace BackRestaurant.Models
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Order> Orders => Set<Order>();
-        public DbSet<OrderItems> OrderItems => Set<OrderItems>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<Table> Tables => Set<Table>();
     }
 }

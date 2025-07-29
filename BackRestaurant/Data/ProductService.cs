@@ -1,4 +1,5 @@
 ﻿using BackRestaurant.Models;
+using BackRestaurant.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackRestaurant.Data
@@ -29,7 +30,7 @@ namespace BackRestaurant.Data
                     })
                     .ToListAsync();
             }catch (Exception ex) {
-                throw new Exception($"An error occurred while fetching products {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -50,7 +51,7 @@ namespace BackRestaurant.Data
                     })
                     .ToListAsync();
             }catch(Exception ex){
-                throw new Exception($"An error occurred while fetching products {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -67,7 +68,7 @@ namespace BackRestaurant.Data
                 await _context.Products.AddAsync(product);
                 return await _context.SaveChangesAsync() > 0;
             }catch(Exception ex){
-                throw new Exception($"An error occurred while insert product {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -85,7 +86,7 @@ namespace BackRestaurant.Data
                 }
             }catch(Exception ex)
             {
-                throw new Exception($"An error occurred while saving product {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
 
@@ -98,7 +99,7 @@ namespace BackRestaurant.Data
             }
             catch (Exception ex)
             {
-                throw new Exception($"An error occurred while update product {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
     }
